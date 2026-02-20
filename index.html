@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Training Catalog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        .course-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        .view-course-btn {
+            transition: all 0.3s ease;
+        }
+        .view-course-btn:hover {
+            letter-spacing: 1px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .syllabus-item {
+            border-left: 3px solid #3b82f6;
+        }
+        /* Accessibility: visible focus outlines for keyboard users */
+        button:focus, .carousel-item:focus, .carousel-item :focus {
+            outline: 3px solid rgba(59,130,246,0.6);
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+        /* Testimonials marquee */
+        .testimonial-marquee { overflow: hidden; }
+        .testimonial-track { display: flex; gap: 1rem; align-items: stretch; }
+        .testimonial-card { min-width: 320px; max-width: 360px; flex: 0 0 auto; }
+        .testimonial-track.scroll { animation: marquee 50s linear infinite; }
+        .testimonial-track.scroll:hover { animation-play-state: paused; }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* Carousel sizing: ensure two cards fully visible on md+ screens */
+        #carouselTrack { align-items: stretch; }
+        .carousel-item { flex: 0 0 100%; }
+          /* Add padding to the viewport so cards sit away from controls
+              Reduced left padding to avoid partial visibility of cards */
+    .carousel-viewport { padding-left: 0.25rem; padding-right: 1rem; }
+        @media (min-width: 768px) {
+            /* Gap between items is 2rem (32px) from markup; subtract half gap when calculating each card basis */
+            .carousel-item { flex: 0 0 calc(50% - 1rem); }
+            .carousel-viewport { padding-left: 0.5rem; padding-right: 2rem; }
+            /* Ensure the track doesn't shrink the items; center if there's extra space */
+            #carouselTrack { justify-content: flex-start; }
+        }
+
+        /* Arrow styling: larger and positioned outside the viewport to avoid overlap */
+        .carousel-arrow { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+        .carousel-arrow svg { width: 24px; height: 24px; }
+        /* push arrows further out on md+ screens */
+        @media (min-width: 768px) {
+            #carouselPrev { left: -1.25rem; }
+            /* move the next arrow further right so it doesn't overlap the course card */
+            #carouselNext { right: -2rem; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="./Logo.jpg" alt="SkillTree Learning logo" class="h-10 w-10 object-contain" />
+                <h1 class="text-2xl font-bold text-gray-800">SkillTree Learning</h1>
+            </div>
+            <div class="space-x-6">
+                <button id="homeBtn" class="text-blue-600 font-semibold hover:text-blue-800">
+                    <i class="fas fa-home mr-1"></i> Home
+                </button>
+                <button id="coursesBtn" class="text-gray-600 font-semibold hover:text-blue-800">
+                    <i class="fas fa-book mr-1"></i> All Courses
+                </button>
+                    <button id="aboutBtn" class="text-gray-600 font-semibold hover:text-blue-800">
+                        <i class="fas fa-info-circle mr-1"></i> About
+                    </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="container mx-auto px-4 py-8" id="mainContent">
+        <!-- Homepage will be loaded here by default -->
+        <div id="homeView">
+            <!-- Hero Section -->
+            <section class="text-center py-12 px-4">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    Master In-Demand Skills with <span class="text-blue-600">Online Training</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
+                    Access professional courses designed by industry experts. Gain practical skills and advance your career from anywhere, at your own pace.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button id="exploreBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                        <i class="fas fa-search mr-2"></i> Explore Courses
+                    </button>
+                    <button id="howItWorksBtn" class="bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-semibold hover:bg-gray-300 transition">
+                        <i class="fas fa-play-circle mr-2"></i> How It Works
+                    </button>
+                </div>
+            </section>
+
+            
+
+            <!-- Featured Courses -->
+            <section class="py-12 featured-courses">
+                <div class="flex justify-between items-center mb-10">
+                    <h3 class="text-3xl font-bold text-gray-800">Featured Courses</h3>
+                    <div class="text-blue-600 font-semibold">
+                        <i class="fas fa-star mr-2"></i> Most Popular
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <!-- Carousel previous button -->
+                    <button id="carouselPrev" aria-label="Previous courses" class="absolute -left-3 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-md hover:bg-gray-100 text-gray-700 carousel-arrow">
+                        <!-- Inline SVG chevron left -->
+                        <svg class="w-6 h-6" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+
+                    <div class="overflow-hidden carousel-viewport">
+                        <div id="carouselTrack" class="flex gap-8">
+                    <!-- Course 1 -->
+                    <div class="course-card carousel-item flex-shrink-0 w-full md:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="relative">
+                            <div class="h-48 bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center">
+                                <i class="fas fa-code text-white text-6xl"></i>
+                            </div>
+                            <div class="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                <i class="fas fa-bolt mr-1"></i> HOT
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-2xl font-bold text-gray-800">Full Stack Web Development</h4>
+                                    <p class="text-gray-600 mt-1">Become a professional web developer</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-blue-600" data-usd="299">₹299</div>
+                                        <div class="text-gray-500 line-through text-sm" data-usd-original="499">₹499</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-6">
+                                Master HTML, CSS, JavaScript, React, Node.js, and databases. Build real-world projects and create a professional portfolio.
+                            </p>
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">8 Weeks</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-friends text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">Intermediate</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                    <span class="text-gray-700">4.9 (2.4k)</span>
+                                </div>
+                            </div>
+                            <button onclick="viewCourse('fullstack')" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition view-course-btn">
+                                <i class="fas fa-eye mr-2"></i> View Course Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Course 2 -->
+                    <div class="course-card carousel-item flex-shrink-0 w-full md:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="relative">
+                            <div class="h-48 bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center">
+                                <i class="fas fa-chart-line text-white text-6xl"></i>
+                            </div>
+                            <div class="absolute top-4 right-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                <i class="fas fa-rocket mr-1"></i> NEW
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-2xl font-bold text-gray-800">Data Science & Machine Learning</h4>
+                                    <p class="text-gray-600 mt-1">Become a data science professional</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-green-600" data-usd="399">₹399</div>
+                                    <div class="text-gray-500 line-through text-sm" data-usd-original="599">₹599</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-6">
+                                Learn Python, statistics, machine learning algorithms, data visualization, and work on real data science projects.
+                            </p>
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">12 Weeks</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-friends text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">Advanced</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                    <span class="text-gray-700">4.8 (1.7k)</span>
+                                </div>
+                            </div>
+                            <button onclick="viewCourse('datascience')" class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition view-course-btn">
+                                <i class="fas fa-eye mr-2"></i> View Course Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Course 3: SAP Analytics Cloud -->
+                    <div class="course-card carousel-item flex-shrink-0 w-full md:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="relative">
+                            <div class="h-48 bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                                <i class="fas fa-layer-group text-white text-6xl"></i>
+                            </div>
+                            <div class="absolute top-4 right-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                <i class="fas fa-cloud mr-1"></i> SAP
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-2xl font-bold text-gray-800">SAP Analytics Cloud</h4>
+                                    <p class="text-gray-600 mt-1">Enterprise analytics on SAP Cloud</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-indigo-600" data-usd="349">₹349</div>
+                                    <div class="text-gray-500 line-through text-sm" data-usd-original="499">₹499</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-6">
+                                Learn to build dashboards, perform planning, and deliver enterprise analytics using SAP Analytics Cloud.
+                            </p>
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">6 Weeks</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-friends text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">Intermediate</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                    <span class="text-gray-700">4.7 (580)</span>
+                                </div>
+                            </div>
+                            <button onclick="viewCourse('sapanalytics')" class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition view-course-btn">
+                                <i class="fas fa-eye mr-2"></i> View Course Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Course 4: Data Analytics -->
+                    <div class="course-card carousel-item flex-shrink-0 w-full md:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="relative">
+                            <div class="h-48 bg-gradient-to-r from-teal-400 to-teal-600 flex items-center justify-center">
+                                <i class="fas fa-chart-pie text-white text-6xl"></i>
+                            </div>
+                            <div class="absolute top-4 right-4 bg-teal-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                <i class="fas fa-database mr-1"></i> Analytics
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-2xl font-bold text-gray-800">Data Analytics</h4>
+                                    <p class="text-gray-600 mt-1">Turn data into actionable insights</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-teal-600" data-usd="199">₹199</div>
+                                    <div class="text-gray-500 line-through text-sm" data-usd-original="349">₹349</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-6">
+                                Learn core analytics techniques, data wrangling, visualization, and storytelling to influence business decisions.
+                            </p>
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">6 Weeks</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-friends text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">Beginner</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                    <span class="text-gray-700">4.6 (900)</span>
+                                </div>
+                            </div>
+                            <button onclick="viewCourse('dataanalytics')" class="w-full bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition view-course-btn">
+                                <i class="fas fa-eye mr-2"></i> View Course Details
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Course 5: Microsoft Power BI -->
+                    <div class="course-card carousel-item flex-shrink-0 w-full md:w-1/2 bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="relative">
+                            <div class="h-48 bg-gradient-to-r from-amber-400 to-yellow-500 flex items-center justify-center">
+                                <i class="fas fa-chart-bar text-white text-6xl"></i>
+                            </div>
+                            <div class="absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                <i class="fab fa-microsoft mr-1"></i> PowerBI
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-2xl font-bold text-gray-800">Microsoft Power BI</h4>
+                                    <p class="text-gray-600 mt-1">Business intelligence & reporting</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-3xl font-bold text-amber-600" data-usd="179">₹179</div>
+                                    <div class="text-gray-500 line-through text-sm" data-usd-original="299">₹299</div>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-6">
+                                Master Power BI desktop, data modeling, DAX, and interactive reporting to drive business decisions.
+                            </p>
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="flex items-center">
+                                    <i class="fas fa-clock text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">4 Weeks</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-friends text-gray-500 mr-2"></i>
+                                    <span class="text-gray-700">Beginner-Intermediate</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                    <span class="text-gray-700">4.5 (1.5k)</span>
+                                </div>
+                            </div>
+                            <button onclick="viewCourse('powerbi')" class="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition view-course-btn">
+                                <i class="fas fa-eye mr-2"></i> View Course Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Testimonials Section -->
+            <section class="py-12 mt-8">
+                <h3 class="text-3xl font-bold text-center text-gray-800 mb-6">What Our Students Say</h3>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Real feedback from learners who've completed our courses. Ratings and reviews reflect hands-on learning and career outcomes.</p>
+
+                <div class="testimonial-marquee">
+                    <div id="testimonialTrack" class="testimonial-track scroll">
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/21.jpg" alt="Asha - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Asha R.</div>
+                                    <div class="text-xs text-gray-500">Full Stack - 5 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"The Full Stack course transformed my career. I built a portfolio and got interviews within weeks."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/men/34.jpg" alt="Carlos - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Carlos M.</div>
+                                    <div class="text-xs text-gray-500">Data Science - 5 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"Hands-on projects and mentor feedback made learning practical. Landed a role as a data analyst."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Priya - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Priya N.</div>
+                                    <div class="text-xs text-gray-500">SAP Analytics - 4.5 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"Excellent coverage of SAP Analytics Cloud — practical and enterprise-focused."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Owen - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Owen K.</div>
+                                    <div class="text-xs text-gray-500">Power BI - 4.8 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"Power BI modules were concise and immediately applicable to my reporting tasks."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/12.jpg" alt="Sana - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Sana P.</div>
+                                    <div class="text-xs text-gray-500">Data Analytics - 4.7 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"Clear examples and templates helped me produce reports my manager loved."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Rafael - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Rafael G.</div>
+                                    <div class="text-xs text-gray-500">Full Stack - 5 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"The capstone project challenged me and the mentors gave actionable feedback."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Maya - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Maya S.</div>
+                                    <div class="text-xs text-gray-500">Data Science - 4.9 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"Real datasets and model deployment sections were the highlight. Great instructor support."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="David - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">David H.</div>
+                                    <div class="text-xs text-gray-500">Power BI - 4.6 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"Improved our team's reporting turnaround after attending this course."</div>
+                        </div>
+
+                        <div class="testimonial-card bg-white rounded-xl shadow-lg p-6">
+                            <div class="flex items-center mb-3">
+                                <img src="https://randomuser.me/api/portraits/women/54.jpg" alt="Neha - Graduate" class="w-12 h-12 rounded-full mr-3">
+                                <div>
+                                    <div class="font-bold text-gray-800">Neha V.</div>
+                                    <div class="text-xs text-gray-500">Data Analytics - 4.8 stars</div>
+                                </div>
+                            </div>
+                            <div class="text-gray-700">"Loved the storytelling section—helped me present insights with confidence."</div>
+                        </div>
+
+                    </div>
+                </div>
+
+            <!-- Features Section -->
+            <section class="py-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 mt-12">
+                <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Why Choose Our Training?</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center p-6">
+                        <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-laptop-code text-blue-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3">Hands-on Projects</h4>
+                        <p class="text-gray-700">Apply your skills with real-world projects and build a professional portfolio.</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-user-tie text-green-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3">Expert Instructors</h4>
+                        <p class="text-gray-700">Learn from industry professionals with years of practical experience.</p>
+                    </div>
+                    <div class="text-center p-6">
+                        <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-certificate text-purple-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-800 mb-3">Certification</h4>
+                        <p class="text-gray-700">Earn a recognized certificate upon completion to showcase your skills.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Course Detail View (hidden by default) -->
+        <div id="courseDetailView" class="hidden fade-in">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+
+        <!-- Privacy Policy View (hidden by default) -->
+        <div id="privacyPolicyView" class="hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <button onclick="showHomeView()" class="text-gray-600 hover:text-gray-900 font-semibold flex items-center mb-6">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Home
+                </button>
+                <h1 class="text-4xl font-bold text-gray-800 mb-6">Privacy Policy – Skilltree Learning</h1>
+                <p class="text-gray-500 mb-8"><strong>Last updated:</strong> January 2026</p>
+
+                <div class="text-gray-700 space-y-6">
+                    <p>Skilltree Learning ("we", "our", or "us") is committed to protecting the privacy and personal data of users who visit or use our website and services. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you register for or participate in training programs offered through our platform.</p>
+                    
+                    <p>By accessing or using Skilltree Learning, you agree to the terms of this Privacy Policy.</p>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">1. About Skilltree Learning</h2>
+                        <p>Skilltree Learning provides a platform where users can select and register for technology training courses, which are delivered in a virtual learning environment. Our services are offered to students, freshers, professionals, and organizations globally.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">2. Information We Collect</h2>
+                        
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">A. Personal Information</h3>
+                        <p class="mb-3">We may collect the following personal details during registration or communication:</p>
+                        <ul class="list-disc list-inside mb-4 space-y-2">
+                            <li>Full name</li>
+                            <li>Email address</li>
+                            <li>Phone number</li>
+                        </ul>
+                        <p class="mb-4">This information is collected only when voluntarily provided by the user.</p>
+
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">B. Learning & Training Data</h3>
+                        <p class="mb-3">To deliver training services effectively, we may collect:</p>
+                        <ul class="list-disc list-inside mb-4 space-y-2">
+                            <li>Course registration details</li>
+                            <li>Course progress and participation records</li>
+                            <li>Quiz and assessment results</li>
+                            <li>Training completion records</li>
+                            <li>Certificates issued by Skilltree Learning</li>
+                        </ul>
+
+                        <h3 class="text-xl font-bold text-gray-800 mb-3">C. Payment Information</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Skilltree Learning offers paid courses</li>
+                            <li>Payments are currently accepted via offline methods such as UPI or bank transfer</li>
+                            <li>We do not store credit/debit card or bank account details on our servers</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">3. Information of Minors (Under 18 Years)</h2>
+                        <p class="mb-3">Skilltree Learning may provide training to users under the age of 18. In such cases:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Registration and participation are assumed to be done with parental or guardian consent</li>
+                            <li>We do not knowingly collect unnecessary personal data from minors</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">4. How We Use Your Information</h2>
+                        <p class="mb-3">We use collected information to:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Register users for selected courses</li>
+                            <li>Deliver training and learning services</li>
+                            <li>Track course progress and assessments</li>
+                            <li>Issue certificates</li>
+                            <li>Communicate training-related updates</li>
+                            <li>Send newsletters and important announcements</li>
+                            <li>Improve course quality and user experience</li>
+                            <li>Meet legal and regulatory requirements</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">5. Communication & Marketing</h2>
+                        <p class="mb-3">We may communicate with registered users via:</p>
+                        <ul class="list-disc list-inside mb-4 space-y-2">
+                            <li>Email newsletters</li>
+                            <li>WhatsApp messages, limited strictly to training-related communication for registered candidates</li>
+                        </ul>
+                        <p>Currently, users do not have an automated opt-in or unsubscribe mechanism. However, users may request to stop communications by contacting us directly.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">6. Cookies & Tracking Technologies</h2>
+                        <p class="mb-3">At present, Skilltree Learning:</p>
+                        <ul class="list-disc list-inside mb-4 space-y-2">
+                            <li>May use basic cookies for website functionality in the future</li>
+                            <li>May integrate analytics or tracking tools (such as Google Analytics or advertising pixels) later</li>
+                        </ul>
+                        <p>If such tools are enabled:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>They will be used only to understand website usage and improve services</li>
+                            <li>No personally identifiable information will be sold or misused</li>
+                            <li>Updates will be reflected in this Privacy Policy when implemented</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">7. Third-Party Services</h2>
+                        <p class="mb-3">Currently, Skilltree Learning does not use external third-party platforms such as:</p>
+                        <ul class="list-disc list-inside mb-4 space-y-2">
+                            <li>LMS providers</li>
+                            <li>CRM tools</li>
+                            <li>Email marketing platforms</li>
+                            <li>Video conferencing tools</li>
+                        </ul>
+                        <p>If third-party services are introduced in the future, they will be selected carefully and bound by appropriate data protection obligations.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">8. Data Sharing & Disclosure</h2>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>We do not sell, rent, or trade personal data.</li>
+                            <li>Information may be shared only:
+                                <ul class="list-disc list-inside ml-4 mt-2 space-y-2">
+                                    <li>When required by law or legal process</li>
+                                    <li>To protect our rights, users, or platform security</li>
+                                    <li>With trusted service providers if needed for service delivery (under confidentiality obligations)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">9. Data Security</h2>
+                        <p class="mb-3">We implement reasonable technical and organizational safeguards to protect personal data from:</p>
+                        <ul class="list-disc list-inside mb-4 space-y-2">
+                            <li>Unauthorized access</li>
+                            <li>Loss or misuse</li>
+                            <li>Disclosure or alteration</li>
+                        </ul>
+                        <p>However, no system can be guaranteed 100% secure.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">10. Data Retention</h2>
+                        <p>We retain personal and learning data only as long as necessary to:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Fulfill training and certification purposes</li>
+                            <li>Comply with legal obligations</li>
+                            <li>Resolve disputes</li>
+                        </ul>
+                        <p class="mt-4">Users may request data deletion, subject to legal and operational requirements.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">11. International Users</h2>
+                        <p>Skilltree Learning serves users in India and internationally. By using our services, you consent to the transfer and processing of your information in accordance with this Privacy Policy.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">12. Your Rights</h2>
+                        <p class="mb-3">Depending on applicable laws (including India DPDP Act and GDPR), users may have the right to:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Access their personal data</li>
+                            <li>Request correction or deletion</li>
+                            <li>Withdraw consent (where applicable)</li>
+                            <li>Raise concerns regarding data usage</li>
+                        </ul>
+                        <p class="mt-4">Requests can be made by contacting us directly.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">13. Future Features</h2>
+                        <p class="mb-3">This Privacy Policy also applies to future services, including:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Mobile applications</li>
+                            <li>AI-based learning recommendations</li>
+                            <li>Certificate verification systems</li>
+                            <li>Corporate / B2B training programs</li>
+                        </ul>
+                        <p class="mt-4">Any significant changes will be updated here.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">14. Changes to This Privacy Policy</h2>
+                        <p>We may update this Privacy Policy periodically. Changes will be effective immediately upon posting on the website.</p>
+                    </div>
+
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">15. Contact Information</h2>
+                        <p class="mb-4">For any questions, concerns, or requests related to this Privacy Policy, contact:</p>
+                        <div class="bg-gray-50 p-6 rounded-lg">
+                            <p class="font-bold text-gray-800">Skilltree Learning</p>
+                            <p class="text-gray-700"><i class="fas fa-map-marker-alt text-blue-600 mr-2"></i> Pune, India</p>
+                            <p class="text-gray-700"><i class="fas fa-envelope text-blue-600 mr-2"></i> Email: <a href="mailto:skilltreelearnings@gmail.com" class="text-blue-600 hover:text-blue-800">skilltreelearnings@gmail.com</a></p>
+                            <p class="text-gray-700"><i class="fas fa-phone text-blue-600 mr-2"></i> Phone: <a href="tel:+917972299848" class="text-blue-600 hover:text-blue-800">+91 7972299848</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About View (hidden by default) -->
+        <div id="aboutView" class="hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">About SkillTree Learning</h2>
+                <p class="text-gray-700 mb-4">SkillTree Learning (the Academy) is dedicated to helping learners acquire in-demand technical and professional skills through practical, project-based courses taught by industry experts. Our mission is to bridge the gap between learning and career outcomes by providing mentorship, real-world projects, and career support.</p>
+                <p class="text-gray-700 mb-4">We offer flexible learning paths in web development, data science, cloud technologies, and more. Students gain hands-on experience building portfolios that showcase their abilities to employers.</p>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-6 mb-3">Contact Details</h3>
+                <ul class="text-gray-700 space-y-2 mb-4">
+                    <li><strong>Email:</strong> <a href="mailto:skilltreelearnings@gmail.com" class="text-blue-600">skilltreelearnings@gmail.com</a></li>
+                    <li><strong>Phone:</strong> <a href="tel:+917972299848" class="text-blue-600">+91 7972299848</a></li>
+                    <li><strong>Admissions:</strong> <a href="mailto:skilltreelearnings@gmail.com" class="text-blue-600">skilltreelearnings@gmail.com</a></li>
+                </ul>
+
+                <h3 class="text-xl font-bold text-gray-800 mt-6 mb-3">Institute Location</h3>
+                <p class="text-gray-700 mb-4">A 402 Wisteria Society, Keshavnagar, Pune<br/>Maharashtra, State 411036</p>
+
+                <div class="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+                    <iframe src="https://maps.google.com/maps?q=A+402+Wisteria+Society,+Keshavnagar,+Pune,+Maharashtra+411036&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Courses View (hidden by default) -->
+        <div id="allCoursesView" class="hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">All Courses</h2>
+                <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <label class="text-gray-700 font-semibold">Level</label>
+                        <select id="filterLevel" class="px-3 py-2 border rounded-lg">
+                            <option value="all">All</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Beginner-Intermediate">Beginner-Intermediate</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <label class="text-gray-700 font-semibold">Provider</label>
+                        <select id="filterProvider" class="px-3 py-2 border rounded-lg">
+                            <option value="all">All</option>
+                            <option value="SAP">SAP</option>
+                            <option value="Microsoft">Microsoft</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <label class="text-gray-700 font-semibold">Delivery</label>
+                        <select id="filterDelivery" class="px-3 py-2 border rounded-lg">
+                            <option value="all">All</option>
+                            <option value="Virtual">Virtual</option>
+                            <option value="Instructor-led">Instructor-led</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <label class="text-gray-700 font-semibold">Min Rating</label>
+                        <select id="filterRating" class="px-3 py-2 border rounded-lg">
+                            <option value="0">Any</option>
+                            <option value="4">4+</option>
+                            <option value="4.5">4.5+</option>
+                            <option value="4.8">4.8+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+        </div>
+
+        <!-- How It Works View (hidden by default) -->
+        <div id="howItWorksView" class="hidden fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">How It Works</h2>
+                <p class="text-gray-700 mb-6">Follow our clear learning pathway to pick a course, register for a batch, complete the course, and get certified. We also provide mentoring and placement support where applicable.</p>
+
+                <!-- Pathway -->
+                <div class="flex items-center justify-center">
+                    <div class="w-full max-w-5xl">
+                        <div class="flex items-center justify-between space-x-4">
+                            <!-- Step 1 -->
+                            <div class="flex-1 text-center p-4">
+                                <div class="mx-auto w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+                                    <svg class="w-10 h-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6l4 2" /></svg>
+                                </div>
+                                <h4 class="font-bold text-lg">Discover Courses</h4>
+                                <p class="text-gray-600 mt-2">Browse curated courses and learning paths.</p>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="w-12 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="flex-1 text-center p-4">
+                                <div class="mx-auto w-20 h-20 rounded-full bg-indigo-50 flex items-center justify-center mb-4">
+                                    <svg class="w-10 h-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7h18M3 12h18M3 17h18"/></svg>
+                                </div>
+                                <h4 class="font-bold text-lg">Register for Batch</h4>
+                                <p class="text-gray-600 mt-2">Select a batch and complete registration.</p>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="w-12 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="flex-1 text-center p-4">
+                                <div class="mx-auto w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mb-4">
+                                    <svg class="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l6.16-3.422"/></svg>
+                                </div>
+                                <h4 class="font-bold text-lg">Start Learning</h4>
+                                <p class="text-gray-600 mt-2">Attend live sessions, complete projects and assignments.</p>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="w-12 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+                            </div>
+
+                            <!-- Step 4 -->
+                            <div class="flex-1 text-center p-4">
+                                <div class="mx-auto w-20 h-20 rounded-full bg-yellow-50 flex items-center justify-center mb-4">
+                                    <svg class="w-10 h-10 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4"/></svg>
+                                </div>
+                                <h4 class="font-bold text-lg">Assessment</h4>
+                                <p class="text-gray-600 mt-2">Take assessments to validate your learning.</p>
+                            </div>
+
+                            <!-- Arrow -->
+                            <div class="w-12 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+                            </div>
+
+                            <!-- Step 5 -->
+                            <div class="flex-1 text-center p-4">
+                                <div class="mx-auto w-20 h-20 rounded-full bg-purple-50 flex items-center justify-center mb-4">
+                                    <svg class="w-10 h-10 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5z"/></svg>
+                                </div>
+                                <h4 class="font-bold text-lg">Certification</h4>
+                                <p class="text-gray-600 mt-2">Receive certification and share with employers.</p>
+                            </div>
+                        </div>
+
+                        <!-- Extra row for mentoring/career support -->
+                        <div class="mt-8 flex items-center justify-center">
+                            <div class="bg-white rounded-xl shadow p-6 flex items-center space-x-4">
+                                <svg class="w-8 h-8 text-pink-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-3-3h-2"/></svg>
+                                <div>
+                                    <div class="font-bold">Mentoring & Career Support</div>
+                                    <div class="text-sm text-gray-600">Optional 1:1 mentoring, portfolio reviews, and placement assistance.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="./Logo.jpg" alt="SkillTree Learning logo" class="h-10 w-10 object-contain text-blue-400" />
+                        <h2 class="text-2xl font-bold">SkillTree Learning</h2>
+                    </div>
+                    <p class="text-gray-300">Professional online training to advance your career. Learn in-demand skills from industry experts.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" id="footerAllCourses" class="text-gray-300 hover:text-white">All Courses</a></li>
+                        <li><a href="#" id="footerPricing" class="text-gray-300 hover:text-white">Pricing</a></li>
+                        <li><a href="#" id="footerSuccess" class="text-gray-300 hover:text-white">Success Stories</a></li>
+                        <li><a href="#" id="footerBlog" class="text-gray-300 hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Support</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-300 hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">FAQs</a></li>
+                        <li><a href="#" class="text-gray-300 hover:text-white">Contact Us</a></li>
+                        <li><a href="#" onclick="showPrivacyPolicyView(); return false;" class="text-gray-300 hover:text-white">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-6">Subscribe</h3>
+                    <p class="text-gray-300 mb-4">Get updates on new courses and special offers.</p>
+                    <div class="flex">
+                        <input type="email" placeholder="Your email" class="px-4 py-2 rounded-l-lg w-full text-gray-800">
+                        <button class="bg-blue-600 px-4 py-2 rounded-r-lg hover:bg-blue-700">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 EduLearn Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Course data
+        const courses = {
+            fullstack: {
+                id: 'fullstack',
+                title: 'Full Stack Web Development',
+                subtitle: 'Become a professional web developer',
+                description: 'Master modern web development technologies and build complete web applications from front-end to back-end. This comprehensive course covers everything you need to become a professional full stack developer.',
+                longDescription: 'This intensive 8-week program takes you from the fundamentals of web development to advanced full stack concepts. You\'ll learn to build responsive websites, interactive web applications, and robust server-side APIs. By the end, you\'ll have a portfolio of real-world projects and the skills to land a job as a web developer.',
+                price: 299,
+                originalPrice: 499,
+                duration: '8 Weeks',
+                level: 'Intermediate',
+                rating: 4.9,
+                reviews: 2400,
+                color: 'blue',
+                icon: 'fas fa-code',
+                instructor: {
+                    name: 'Swapnil Ghurde',
+                    title: 'Senior Business Transformation Expert',
+                    experience: '18+ years in Business Transformation & Technology',
+                    avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
+                },
+                provider: 'Other',
+                delivery: 'Instructor-led',
+                syllabus: [
+                    { week: 1, title: 'HTML5 & CSS3 Fundamentals', topics: ['Semantic HTML', 'CSS Grid & Flexbox', 'Responsive Design'] },
+                    { week: 2, title: 'JavaScript Essentials', topics: ['ES6+ Features', 'DOM Manipulation', 'Async Programming'] },
+                    { week: 3, title: 'Frontend Framework: React', topics: ['Components & Props', 'State Management', 'React Hooks'] },
+                    { week: 4, title: 'Backend with Node.js', topics: ['Express.js', 'RESTful APIs', 'Middleware'] },
+                    { week: 5, title: 'Database Management', topics: ['MongoDB', 'SQL Basics', 'Data Modeling'] },
+                    { week: 6, title: 'Authentication & Security', topics: ['JWT Tokens', 'OAuth', 'Security Best Practices'] },
+                    { week: 7, title: 'DevOps & Deployment', topics: ['Git & GitHub', 'Docker Basics', 'Cloud Deployment'] },
+                    { week: 8, title: 'Capstone Project', topics: ['Full Stack Application', 'Code Review', 'Portfolio Presentation'] }
+                ],
+                features: [
+                    '80+ hours of video content',
+                    '15 hands-on projects',
+                    'Code reviews by instructors',
+                    'Career guidance sessions',
+                    'Certificate of completion',
+                    'Access to private community'
+                ],
+                requirements: [
+                    'Basic computer skills',
+                    'No prior coding experience required',
+                    'Dedication to practice 15-20 hours/week'
+                ]
+            },
+            datascience: {
+                id: 'datascience',
+                title: 'Data Science & Machine Learning',
+                subtitle: 'Become a data science professional',
+                description: 'Learn Python, statistics, machine learning algorithms, data visualization, and work on real data science projects.',
+                longDescription: 'This 12-week intensive program covers the complete data science workflow from data collection and cleaning to advanced machine learning model deployment. You\'ll work with real datasets, build predictive models, and learn to communicate insights effectively. Designed for both beginners and professionals looking to transition into data science.',
+                price: 399,
+                originalPrice: 599,
+                duration: '12 Weeks',
+                level: 'Advanced',
+                rating: 4.8,
+                reviews: 1700,
+                color: 'green',
+                icon: 'fas fa-chart-line',
+                instructor: {
+                    name: 'Dr. Sarah Chen',
+                    title: 'Lead Data Scientist at DataWorks',
+                    experience: 'PhD in Computer Science, 8+ years in ML',
+                    avatar: 'https://randomuser.me/api/portraits/women/44.jpg'
+                },
+                provider: 'Other',
+                delivery: 'Virtual',
+                syllabus: [
+                    { week: 1, title: 'Python for Data Science', topics: ['NumPy & Pandas', 'Data Structures', 'Basic Programming'] },
+                    { week: 2, title: 'Statistics Fundamentals', topics: ['Probability', 'Descriptive Statistics', 'Hypothesis Testing'] },
+                    { week: 3, title: 'Data Visualization', topics: ['Matplotlib', 'Seaborn', 'Plotly'] },
+                    { week: 4, title: 'Data Cleaning & Preprocessing', topics: ['Missing Data', 'Feature Engineering', 'Data Transformation'] },
+                    { week: 5, title: 'Exploratory Data Analysis', topics: ['Correlation Analysis', 'Pattern Recognition', 'Statistical Testing'] },
+                    { week: 6, title: 'Machine Learning Basics', topics: ['Supervised vs Unsupervised', 'Regression Models', 'Classification'] },
+                    { week: 7, title: 'Advanced ML Algorithms', topics: ['Decision Trees', 'Random Forests', 'Gradient Boosting'] },
+                    { week: 8, title: 'Neural Networks & Deep Learning', topics: ['TensorFlow Basics', 'CNN Architecture', 'RNN for Sequences'] },
+                    { week: 9, title: 'Natural Language Processing', topics: ['Text Processing', 'Sentiment Analysis', 'Topic Modeling'] },
+                    { week: 10, title: 'Model Deployment', topics: ['Flask API', 'Cloud Deployment', 'Model Monitoring'] },
+                    { week: 11, title: 'Big Data Tools', topics: ['Spark Basics', 'Hadoop Ecosystem', 'Data Pipelines'] },
+                    { week: 12, title: 'Capstone Project', topics: ['End-to-end Data Science Project', 'Presentation Skills', 'Portfolio Development'] }
+                ],
+                features: [
+                    '120+ hours of video content',
+                    '10 real-world datasets',
+                    'ML model deployment projects',
+                    '1-on-1 mentoring sessions',
+                    'Certificate of completion',
+                    'Job placement assistance'
+                ],
+                requirements: [
+                    'Basic math knowledge',
+                    'Some programming experience helpful',
+                    'Willingness to work with data',
+                    'Dedication to practice 20-25 hours/week'
+                ]
+            }
+            ,
+            sapanalytics: {
+                id: 'sapanalytics',
+                title: 'SAP Analytics Cloud',
+                subtitle: 'Enterprise analytics on SAP Cloud',
+                description: 'Learn to build dashboards, planning models and enterprise analytics using SAP Analytics Cloud.',
+                longDescription: 'This 6-week course covers SAP Analytics Cloud fundamentals, including data modeling, story design, planning and advanced analytics. You\'ll build interactive dashboards and planning models used in enterprise scenarios.',
+                price: 349,
+                originalPrice: 499,
+                duration: '6 Weeks',
+                level: 'Intermediate',
+                rating: 4.7,
+                reviews: 580,
+                color: 'indigo',
+                icon: 'fas fa-layer-group',
+                instructor: {
+                    name: 'Priya Nair',
+                    title: 'SAP Analytics Consultant',
+                    experience: '10+ years in Enterprise Analytics',
+                    avatar: 'https://randomuser.me/api/portraits/women/68.jpg'
+                },
+                provider: 'SAP',
+                delivery: 'Virtual',
+                syllabus: [
+                    { week: 1, title: 'SAC Overview & Navigation', topics: ['SAC Architecture', 'Workspace & Stories', 'Connecting Data'] },
+                    { week: 2, title: 'Data Modeling in SAC', topics: ['Data Preparation', 'Models & Versions', 'Import Connections'] },
+                    { week: 3, title: 'Story Design & Visualization', topics: ['Charts & Widgets', 'Interactive Filters', 'Custom Themes'] },
+                    { week: 4, title: 'Planning & Predictive', topics: ['Planning Models', 'Allocations', 'Predictive Scenarios'] },
+                    { week: 5, title: 'Advanced Analytics', topics: ['Smart Insights', 'Geo Maps', 'Analytics Designer'] },
+                    { week: 6, title: 'Capstone Dashboard', topics: ['End-to-end Dashboard', 'Performance Tuning', 'Presentation'] }
+                ],
+                features: [
+                    'Hands-on SAP system workshops',
+                    'Enterprise dashboard projects',
+                    'Templates for quick deployments',
+                    'Certificate of completion'
+                ],
+                requirements: [
+                    'Basic knowledge of analytics or BI tools',
+                    'Familiarity with spreadsheets'
+                ]
+            },
+            dataanalytics: {
+                id: 'dataanalytics',
+                title: 'Data Analytics',
+                subtitle: 'Turn data into actionable insights',
+                description: 'Core analytics skills: data wrangling, visualization, storytelling and business analysis.',
+                longDescription: 'This practical 6-week course focuses on the essential skills needed to analyze business data. You\'ll learn data cleaning, aggregation, visualization and how to communicate findings to stakeholders.',
+                price: 199,
+                originalPrice: 349,
+                duration: '6 Weeks',
+                level: 'Beginner',
+                rating: 4.6,
+                reviews: 900,
+                color: 'teal',
+                icon: 'fas fa-chart-pie',
+                instructor: {
+                    name: 'Carlos Mendez',
+                    title: 'Business Analyst & Data Storyteller',
+                    experience: '12+ years in Analytics & BI',
+                    avatar: 'https://randomuser.me/api/portraits/men/52.jpg'
+                },
+                provider: 'Other',
+                delivery: 'Virtual',
+                syllabus: [
+                    { week: 1, title: 'Introduction to Data Analytics', topics: ['Data Types', 'Basic Statistics', 'Analytics Process'] },
+                    { week: 2, title: 'Data Wrangling', topics: ['Cleaning Data', 'Transformations', 'Pivots'] },
+                    { week: 3, title: 'Visualization Principles', topics: ['Charts & Dashboards', 'Storytelling', 'Tools Overview'] },
+                    { week: 4, title: 'Business Metrics', topics: ['KPIs & Metrics', 'Cohort Analysis', 'Segmentation'] },
+                    { week: 5, title: 'Reporting & Presentation', topics: ['Report Design', 'Executive Summaries', 'Stakeholder Communication'] },
+                    { week: 6, title: 'Capstone Analysis', topics: ['End-to-end Case Study', 'Presentation', 'Recommendations'] }
+                ],
+                features: [
+                    'Practical case studies',
+                    'Templates for reporting',
+                    'Guided data exercises',
+                    'Certificate of completion'
+                ],
+                requirements: [
+                    'Comfort with spreadsheets',
+                    'Curiosity to work with data'
+                ]
+            },
+            powerbi: {
+                id: 'powerbi',
+                title: 'Microsoft Power BI',
+                subtitle: 'Business intelligence & reporting',
+                description: 'Master Power BI Desktop, DAX and reporting to build interactive business reports.',
+                longDescription: 'In this 4-week hands-on course you\'ll learn Power BI Desktop, data modeling, DAX formulas, and best practices for building interactive reports and dashboards for business users.',
+                price: 179,
+                originalPrice: 299,
+                duration: '4 Weeks',
+                level: 'Beginner-Intermediate',
+                rating: 4.5,
+                reviews: 1500,
+                color: 'amber',
+                icon: 'fas fa-chart-bar',
+                instructor: {
+                    name: 'Aisha Khan',
+                    title: 'BI Consultant',
+                    experience: '9+ years in Power BI & Reporting',
+                    avatar: 'https://randomuser.me/api/portraits/women/55.jpg'
+                },
+                provider: 'Microsoft',
+                delivery: 'Virtual',
+                syllabus: [
+                    { week: 1, title: 'Power BI Basics', topics: ['Power BI Desktop UI', 'Connecting Data', 'Query Editor'] },
+                    { week: 2, title: 'Data Modeling & DAX', topics: ['Relationships', 'Measures', 'Calculated Columns'] },
+                    { week: 3, title: 'Report Design', topics: ['Visuals', 'Tooltips', 'Interactivity'] },
+                    { week: 4, title: 'Publishing & Sharing', topics: ['Power BI Service', 'Row-level Security', 'Performance'] }
+                ],
+                features: [
+                    'Hands-on Power BI exercises',
+                    'DAX formula library',
+                    'Report templates',
+                    'Certificate of completion'
+                ],
+                requirements: [
+                    'Basic Excel skills',
+                    'Willingness to learn DAX'
+                ]
+            }
+        };
+
+        // Currency / formatting helper: convert USD to INR and format
+        // Assumption: display prices in INR using a fixed USD->INR rate.
+        // If you want a different rate, change USD_TO_INR below or wire it to a live API.
+        const USD_TO_INR = 83; // assumed conversion rate: 1 USD = 83 INR
+        function formatPrice(usdAmount) {
+            // convert to INR and format using Indian locale
+            const inr = Math.round((Number(usdAmount) || 0) * USD_TO_INR);
+            return inr.toLocaleString('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 });
+        }
+
+        // DOM elements
+        const homeView = document.getElementById('homeView');
+        const courseDetailView = document.getElementById('courseDetailView');
+    const homeBtn = document.getElementById('homeBtn');
+    const coursesBtn = document.getElementById('coursesBtn');
+    const aboutBtn = document.getElementById('aboutBtn');
+        const exploreBtn = document.getElementById('exploreBtn');
+        const mainContent = document.getElementById('mainContent');
+
+        // Function to show home view
+        function showHomeView() {
+            homeView.classList.remove('hidden');
+            courseDetailView.classList.add('hidden');
+            courseDetailView.innerHTML = '';
+            const aboutView = document.getElementById('aboutView');
+            if (aboutView) aboutView.classList.add('hidden');
+            const privacyPolicyView = document.getElementById('privacyPolicyView');
+            if (privacyPolicyView) privacyPolicyView.classList.add('hidden');
+            updateActiveNav('home');
+        }
+
+        // Function to show privacy policy view
+        function showPrivacyPolicyView() {
+            const privacyPolicyView = document.getElementById('privacyPolicyView');
+            if (!privacyPolicyView) return;
+
+            // Hide other views
+            homeView.classList.add('hidden');
+            courseDetailView.classList.add('hidden');
+            courseDetailView.innerHTML = '';
+            const aboutView = document.getElementById('aboutView');
+            if (aboutView) aboutView.classList.add('hidden');
+            privacyPolicyView.classList.remove('hidden');
+            updateActiveNav('privacy');
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Function to show about view
+        function showAboutView() {
+            const aboutView = document.getElementById('aboutView');
+            if (!aboutView) return;
+
+            // Hide other views
+            homeView.classList.add('hidden');
+            courseDetailView.classList.add('hidden');
+            courseDetailView.innerHTML = '';
+
+            // Show about
+            aboutView.classList.remove('hidden');
+            updateActiveNav('about');
+        }
+
+        // Function to show How It Works as a modal popup
+        function showHowItWorks() {
+            const howView = document.getElementById('howItWorksView');
+            if (!howView) return;
+
+            // Save current scroll position and prevent auto-scroll when focusing
+            const scrollPos = { x: window.scrollX || window.pageXOffset, y: window.scrollY || window.pageYOffset };
+
+            // Create modal overlay
+            const modal = document.createElement('div');
+            modal.id = 'howItWorksModal';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl w-full max-w-6xl p-8 relative shadow-lg">
+                    <button id="howCloseBtn" aria-label="Close" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 p-2 rounded-full focus:outline-none">
+                        <!-- Close X -->
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                    <div id="howItWorksModalContent" class="overflow-auto max-h-[92vh]">
+                        ${howView.innerHTML}
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            // prevent background scroll
+            document.body.style.overflow = 'hidden';
+            // restore scroll position in case browser moved it
+            window.scrollTo(scrollPos.x, scrollPos.y);
+
+            const closeBtn = document.getElementById('howCloseBtn');
+            function close() {
+                const m = document.getElementById('howItWorksModal');
+                if (m) m.remove();
+                document.body.style.overflow = '';
+                // restore scroll position after closing
+                window.scrollTo(scrollPos.x, scrollPos.y);
+                document.removeEventListener('keydown', onKey);
+            }
+
+            function onKey(e) {
+                if (e.key === 'Escape') close();
+            }
+
+            closeBtn.addEventListener('click', close);
+            document.addEventListener('keydown', onKey);
+            // focus close button for accessibility without scrolling
+            try {
+                closeBtn.focus({ preventScroll: true });
+            } catch (err) {
+                // fallback for older browsers
+                closeBtn.focus();
+                window.scrollTo(scrollPos.x, scrollPos.y);
+            }
+        }
+
+        // Function to show course detail view
+        function viewCourse(courseId) {
+            const course = courses[courseId];
+            if (!course) return;
+            
+            homeView.classList.add('hidden');
+            courseDetailView.classList.remove('hidden');
+            
+            // Generate color classes based on course color
+            const colorClasses = {
+                blue: {
+                    bg: 'bg-blue-600',
+                    hover: 'hover:bg-blue-700',
+                    text: 'text-blue-600',
+                    lightBg: 'bg-blue-50',
+                    border: 'border-blue-200'
+                },
+                green: {
+                    bg: 'bg-green-600',
+                    hover: 'hover:bg-green-700',
+                    text: 'text-green-600',
+                    lightBg: 'bg-green-50',
+                    border: 'border-green-200'
+                }
+                ,
+                indigo: {
+                    bg: 'bg-indigo-600',
+                    hover: 'hover:bg-indigo-700',
+                    text: 'text-indigo-600',
+                    lightBg: 'bg-indigo-50',
+                    border: 'border-indigo-200'
+                },
+                teal: {
+                    bg: 'bg-teal-600',
+                    hover: 'hover:bg-teal-700',
+                    text: 'text-teal-600',
+                    lightBg: 'bg-teal-50',
+                    border: 'border-teal-200'
+                },
+                amber: {
+                    bg: 'bg-amber-600',
+                    hover: 'hover:bg-amber-700',
+                    text: 'text-amber-600',
+                    lightBg: 'bg-amber-50',
+                    border: 'border-amber-200'
+                }
+            };
+            
+            const color = colorClasses[course.color];
+            
+            // Create course detail HTML
+            courseDetailView.innerHTML = `
+                <!-- Back Button -->
+                <div class="mb-8">
+                    <button onclick="showHomeView()" class="text-gray-600 hover:text-gray-900 font-semibold flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Courses
+                    </button>
+                </div>
+                
+                <!-- Course Header -->
+                <div class="bg-gradient-to-r from-${course.color}-500 to-${course.color}-700 rounded-2xl p-8 text-white mb-8">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h1 class="text-4xl font-bold mb-2">${course.title}</h1>
+                            <p class="text-xl opacity-90 mb-6">${course.subtitle}</p>
+                            <div class="flex flex-wrap gap-4 mb-6">
+                                <div class="flex items-center bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                                    <i class="fas fa-clock mr-2"></i> ${course.duration}
+                                </div>
+                                <div class="flex items-center bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                                    <i class="fas fa-user-friends mr-2"></i> ${course.level} Level
+                                </div>
+                                <div class="flex items-center bg-white bg-opacity-20 px-4 py-2 rounded-full">
+                                    <i class="fas fa-star mr-2"></i> ${course.rating} (${course.reviews.toLocaleString()} reviews)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white text-gray-800 rounded-xl p-6 min-w-[200px]">
+                            <div class="text-3xl font-bold text-${course.color}-600 mb-2">${formatPrice(course.price)}</div>
+                            <div class="text-gray-500 line-through text-sm mb-4">${formatPrice(course.originalPrice)}</div>
+                            <button onclick="registerForCourse('${course.id}')" class="w-full ${color.bg} text-white py-3 rounded-lg font-semibold ${color.hover} transition">
+                                <i class="fas fa-user-plus mr-2"></i> Register Now
+                            </button>
+                            <p class="text-xs text-gray-500 mt-2 text-center">30-day money-back guarantee</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column: Course Details -->
+                    <div class="lg:col-span-2">
+                        <!-- Course Description -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Course Description</h2>
+                            <p class="text-gray-700 mb-6">${course.longDescription}</p>
+                            
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">What You'll Learn</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                ${course.features.map(feature => `
+                                    <div class="flex items-start">
+                                        <i class="fas fa-check text-${course.color}-600 mt-1 mr-3"></i>
+                                        <span class="text-gray-700">${feature}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Requirements</h3>
+                            <ul class="list-disc pl-5 text-gray-700">
+                                ${course.requirements.map(req => `<li class="mb-2">${req}</li>`).join('')}
+                            </ul>
+                        </div>
+                        
+                        <!-- Syllabus -->
+                        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Course Syllabus</h2>
+                            <div class="space-y-6">
+                                ${course.syllabus.filter(week => week.week === 1).map(week => `
+                                    <div class="border-l-4 border-${course.color}-500 pl-6 py-4 ${color.lightBg}">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <h3 class="text-lg font-bold text-gray-800">Week ${week.week}: ${week.title}</h3>
+                                                <div class="mt-2">
+                                                    ${week.topics.map(topic => `
+                                                        <div class="flex items-center text-gray-700 mb-1">
+                                                            <i class="fas fa-circle text-xs text-${course.color}-500 mr-3"></i>
+                                                            <span>${topic}</span>
+                                                        </div>
+                                                    `).join('')}
+                                                </div>
+                                            </div>
+                                            <div class="text-sm text-gray-500 bg-white px-3 py-1 rounded-full border ${color.border}">
+                                                ${week.week === 1 ? 'Getting Started' : week.week === course.syllabus.length ? 'Capstone' : 'Core Module'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                                
+                                ${course.syllabus.filter(week => week.week >= 2).length > 0 ? `
+                                    <div class="relative">
+                                        <div class="absolute inset-0 bg-white bg-opacity-95 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-lg">
+                                            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
+                                                <h4 class="text-xl font-bold text-gray-800 mb-4">Get Full Syllabus</h4>
+                                                <p class="text-gray-600 mb-6">Enter your details to access the complete course syllabus and more information about all modules.</p>
+                                                <form class="space-y-4" onsubmit="submitSyllabusRequest('${course.id}'); return false;">
+                                                    <input type="text" placeholder="Full Name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
+                                                    <input type="email" placeholder="Email Address" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
+                                                    <input type="tel" placeholder="Phone Number" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
+                                                    <button type="submit" class="w-full bg-${course.color}-600 text-white py-3 rounded-lg font-semibold hover:bg-${course.color}-700 transition">
+                                                        Get Complete Syllabus
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="opacity-60">
+                                            ${course.syllabus.filter(week => week.week >= 2).map(week => `
+                                                <div class="border-l-4 border-${course.color}-500 pl-6 py-4 ${color.lightBg}">
+                                                    <div class="flex justify-between items-start">
+                                                        <div>
+                                                            <h3 class="text-lg font-bold text-gray-800">Week ${week.week}: ${week.title}</h3>
+                                                            <div class="mt-2">
+                                                                ${week.topics.map(topic => `
+                                                                    <div class="flex items-center text-gray-700 mb-1">
+                                                                        <i class="fas fa-circle text-xs text-${course.color}-500 mr-3"></i>
+                                                                        <span>${topic}</span>
+                                                                    </div>
+                                                                `).join('')}
+                                                            </div>
+                                                        </div>
+                                                        <div class="text-sm text-gray-500 bg-white px-3 py-1 rounded-full border ${color.border}">
+                                                            ${week.week === 1 ? 'Getting Started' : week.week === course.syllabus.length ? 'Capstone' : 'Core Module'}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column: Instructor & Registration -->
+                    <div class="space-y-8">
+                        <!-- Instructor -->
+                        <div class="bg-white rounded-xl shadow-lg p-6">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6">Instructor</h2>
+                            <div class="flex items-start mb-6">
+                                <div class="w-16 h-16 rounded-full bg-gray-300 mr-4 overflow-hidden">
+                                    <div class="w-full h-full flex items-center justify-center bg-${course.color}-100 text-${course.color}-600 text-2xl">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">${course.instructor.name}</h3>
+                                    <p class="text-gray-600">${course.instructor.title}</p>
+                                    <p class="text-gray-500 text-sm mt-2">${course.instructor.experience}</p>
+                                </div>
+                            </div>
+                            <div class="border-t pt-6">
+                                <h4 class="font-bold text-gray-800 mb-3">Instructor's Message</h4>
+                                <p class="text-gray-700">"I'm excited to guide you through this course. My goal is to help you build practical skills that you can apply immediately in your career. Let's embark on this learning journey together!"</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Registration Card -->
+                        <div class="bg-gradient-to-br from-${course.color}-50 to-${course.color}-100 rounded-xl shadow-lg p-6 border border-${course.color}-200">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Enroll in this Course</h2>
+                            <div class="mb-6">
+                                <div class="text-4xl font-bold text-${course.color}-700 mb-2">${formatPrice(course.price)}</div>
+                                <div class="text-gray-600 line-through">${formatPrice(course.originalPrice)}</div>
+                                <div class="text-green-600 font-semibold mt-2">Save ${formatPrice(course.originalPrice - course.price)}</div>
+                            </div>
+                            
+                            <div class="space-y-4 mb-8">
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-${course.color}-600 mr-3"></i>
+                                    <span>Full lifetime access</span>
+                                </div>
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-${course.color}-600 mr-3"></i>
+                                    <span>Certificate of completion</span>
+                                </div>
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-${course.color}-600 mr-3"></i>
+                                    <span>30-day money-back guarantee</span>
+                                </div>
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-${course.color}-600 mr-3"></i>
+                                    <span>Access on mobile and desktop</span>
+                                </div>
+                            </div>
+                            
+                            <button onclick="registerForCourse('${course.id}')" class="w-full ${color.bg} text-white py-4 rounded-lg font-bold text-lg ${color.hover} transition mb-4">
+                                <i class="fas fa-shopping-cart mr-2"></i> Register Now
+                            </button>
+                            
+                            <p class="text-center text-gray-600 text-sm">Need help deciding? <a href="#" class="text-${course.color}-600 font-semibold">Contact our advisors</a></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            updateActiveNav('course');
+        }
+
+        // Function to register for a course
+        function registerForCourse(courseId) {
+            const course = courses[courseId];
+            if (!course) return;
+            
+            // Create registration modal
+            const modalHtml = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-8">
+                        <div class="text-center mb-6">
+                            <div class="w-16 h-16 rounded-full bg-${course.color}-100 flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-check text-${course.color}-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Register for ${course.title}</h3>
+                            <p class="text-gray-600">Complete your registration to start learning</p>
+                        </div>
+                        
+                        <form id="registrationForm" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">Full Name</label>
+                                <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Email Address</label>
+                                <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" id="terms" required class="mr-3">
+                                <label for="terms" class="text-gray-700">I agree to the terms and conditions</label>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-8 flex space-x-4">
+                            <button onclick="closeModal()" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50">
+                                Cancel
+                            </button>
+                            <button onclick="submitRegistration('${courseId}')" class="flex-1 bg-${course.color}-600 text-white py-3 rounded-lg font-semibold hover:bg-${course.color}-700">
+                                Complete Registration - ${formatPrice(course.price)}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Create and append modal
+            const modal = document.createElement('div');
+            modal.innerHTML = modalHtml;
+            modal.id = 'registrationModal';
+            document.body.appendChild(modal);
+        }
+
+        // Function to close modal
+        function closeModal() {
+            const modal = document.getElementById('registrationModal');
+            const successModal = document.getElementById('successModal');
+            const paymentModal = document.getElementById('paymentModal');
+            const chatModal = document.getElementById('chatModal');
+            if (modal) modal.remove();
+            if (successModal) successModal.remove();
+            if (paymentModal) paymentModal.remove();
+            if (chatModal) chatModal.remove();
+        }
+
+        // Global variable for current course
+        let currentCourseId = null;
+
+        // Function to submit registration
+        function submitRegistration(courseId) {
+            const form = document.getElementById('registrationForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            const course = courses[courseId];
+            currentCourseId = courseId; // Store current course
+            
+            // Remove modal
+            closeModal();
+            
+            // Show payment modal
+            openPaymentModal(courseId);
+        }
+
+        // Function to open payment modal
+        function openPaymentModal(courseId) {
+            const course = courses[courseId];
+            
+            const paymentHtml = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-8 text-center">
+                        <div class="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-qrcode text-blue-600 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Complete Your Payment</h3>
+                        <p class="text-gray-600 mb-6">Scan the QR code below to pay for <span class="font-semibold">${course.title}</span>.</p>
+                        
+                        <!-- QR Code -->
+                        <div class="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 mb-6 flex items-center justify-center">
+                            <div class="text-center">
+                                <img src="./QRCode.png" alt="QR Code for Payment" class="w-40 h-40 mx-auto mb-2 border border-gray-300 rounded">
+                                <p class="text-gray-500 text-sm">Scan to Pay</p>
+                                <p class="text-gray-400 text-xs mt-1">Amount: ${formatPrice(course.price)}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="text-left mb-6">
+                            <h4 class="font-semibold text-gray-800 mb-3">Need Help?</h4>
+                            <div class="space-y-2">
+                                <button class="contact-email-btn w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                    <i class="fas fa-envelope mr-2 text-blue-600"></i>
+                                    Email Support: skilltreelearnings@gmail.com
+                                </button>
+                                <button class="contact-phone-btn w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                    <i class="fas fa-phone mr-2 text-green-600"></i>
+                                    Call Support: +91 7972299848
+                                </button>
+                                <button class="contact-chat-btn w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                                    <i class="fas fa-comments mr-2 text-purple-600"></i>
+                                    Live Chat Support
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button class="close-modal-btn w-full bg-gray-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-gray-700">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const paymentModal = document.createElement('div');
+            paymentModal.innerHTML = paymentHtml;
+            paymentModal.id = 'paymentModal';
+            document.body.appendChild(paymentModal);
+            
+            // Add event listener to close button
+            const closeButton = paymentModal.querySelector('.close-modal-btn');
+            closeButton.addEventListener('click', closeModal);
+            
+            // Add event listeners to contact buttons
+            const emailBtn = paymentModal.querySelector('.contact-email-btn');
+            emailBtn.addEventListener('click', () => contactSupport('email'));
+            
+            const phoneBtn = paymentModal.querySelector('.contact-phone-btn');
+            phoneBtn.addEventListener('click', () => contactSupport('phone'));
+            
+            const chatBtn = paymentModal.querySelector('.contact-chat-btn');
+            chatBtn.addEventListener('click', () => contactSupport('chat'));
+        }
+
+        // Chatbot variables
+        let questionCount = 0;
+        const botResponses = {
+            'price': 'The course price is displayed in the course details. You can complete payment using the QR code after registration.',
+            'register': 'To register, select a course, fill out the registration form, and complete the payment via the QR code provided.',
+            'payment': 'Payment is processed through the QR code in the payment popup. Scan it with your preferred payment app.',
+            'contact': 'You can reach us at info@skilltreelearning.com or call +1 (234) 567-890.',
+            'help': 'I can help with questions about pricing, registration, payment, and contact information. What would you like to know?',
+            'default': 'I\'m sorry, I don\'t understand that. Please try asking about pricing, registration, payment, or contact info.'
+        };
+
+        // Function to handle contact support
+        function contactSupport(type) {
+            if (type === 'email') {
+                window.location.href = 'mailto:';
+            } else if (type === 'phone') {
+                window.location.href = 'tel:+1234567890';
+            } else if (type === 'chat') {
+                // Close payment modal
+                const paymentModal = document.getElementById('paymentModal');
+                if (paymentModal) paymentModal.remove();
+                openChatModal();
+            }
+        }
+
+        // Function to open chat modal
+        function openChatModal() {
+            questionCount = 0; // Reset question count
+            const chatHtml = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-6 flex flex-col" style="height: 80vh;">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Live Chat Support</h3>
+                            <button class="close-chat-btn text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div id="chatHistory" class="flex-1 overflow-y-auto mb-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="bot-message mb-3">
+                                <div class="bg-blue-100 p-3 rounded-lg">
+                                    <p class="text-sm text-gray-800">Hi! I'm here to help with your questions about courses, registration, and payment. How can I assist you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button id="sendChatBtn" class="bg-blue-600 text-white px-4 py-2 rounded-r-lg hover:bg-blue-700">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const chatModal = document.createElement('div');
+            chatModal.innerHTML = chatHtml;
+            chatModal.id = 'chatModal';
+            document.body.appendChild(chatModal);
+            
+            // Add event listeners
+            const closeBtn = chatModal.querySelector('.close-chat-btn');
+            closeBtn.addEventListener('click', closeChatAndReopenPayment);
+            
+            const sendBtn = chatModal.querySelector('#sendChatBtn');
+            const input = chatModal.querySelector('#chatInput');
+            
+            sendBtn.addEventListener('click', () => sendMessage(input));
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage(input);
+            });
+        }
+
+        // Function to close chat and reopen payment modal
+        function closeChatAndReopenPayment() {
+            // Close chat modal
+            const chatModal = document.getElementById('chatModal');
+            if (chatModal) chatModal.remove();
+            
+            // Reopen payment modal
+            if (currentCourseId) {
+                openPaymentModal(currentCourseId);
+            }
+        }
+
+        // Function to send message
+        function sendMessage(input) {
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat(message, 'user');
+            input.value = '';
+            
+            // Increment question count
+            questionCount++;
+            
+            // Get bot response
+            setTimeout(() => {
+                const response = getBotResponse(message);
+                addMessageToChat(response, 'bot');
+                
+                // Check if should offer live agent
+                if (questionCount >= 5) {
+                    setTimeout(() => {
+                        addMessageToChat("You've asked 5 questions. Would you like to speak to a live agent? Type 'yes' to connect.", 'bot');
+                    }, 1000);
+                }
+            }, 500); // Simulate typing delay
+        }
+
+        // Function to add message to chat
+        function addMessageToChat(message, sender) {
+            const chatHistory = document.getElementById('chatHistory');
+            if (!chatHistory) return;
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${sender}-message mb-3`;
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="bg-blue-600 text-white p-3 rounded-lg ml-auto" style="max-width: 80%;">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="bg-gray-100 p-3 rounded-lg" style="max-width: 80%;">
+                        <p class="text-sm text-gray-800">${message}</p>
+                    </div>
+                `;
+            }
+            
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        // Function to get bot response
+        function getBotResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('price') || lowerMessage.includes('cost') || lowerMessage.includes('fee')) {
+                return botResponses.price;
+            } else if (lowerMessage.includes('register') || lowerMessage.includes('enroll') || lowerMessage.includes('sign up')) {
+                return botResponses.register;
+            } else if (lowerMessage.includes('payment') || lowerMessage.includes('pay') || lowerMessage.includes('qr')) {
+                return botResponses.payment;
+            } else if (lowerMessage.includes('contact') || lowerMessage.includes('email') || lowerMessage.includes('phone') || lowerMessage.includes('call')) {
+                return botResponses.contact;
+            } else if (lowerMessage.includes('help') || lowerMessage.includes('what can you do')) {
+                return botResponses.help;
+            } else if (lowerMessage.includes('yes') && questionCount >= 5) {
+                // Handle live agent request
+                setTimeout(() => {
+                    addMessageToChat("Connecting you to a live agent... Please wait.", 'bot');
+                    setTimeout(() => {
+                        addMessageToChat("Live agent connected! How can I help you today?", 'bot');
+                    }, 2000);
+                }, 1000);
+                return "Great! I'm connecting you to a live agent now.";
+            } else {
+                return botResponses.default;
+            }
+        }
+
+        // Function to handle syllabus request form submission
+        function submitSyllabusRequest(courseId) {
+            const course = courses[courseId];
+            
+            // Close the course detail view and show success message
+            courseDetailView.classList.add('hidden');
+            courseDetailView.innerHTML = '';
+            
+            // Show success message
+            const successHtml = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-8 text-center">
+                        <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-check text-green-600 text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Request Submitted!</h3>
+                        <p class="text-gray-600 mb-6">Thank you for your interest in <span class="font-semibold">${course.title}</span>. We'll send you the complete syllabus and more details via email shortly.</p>
+                        <button onclick="closeModal()" class="bg-${course.color}-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-${course.color}-700">
+                            Continue Browsing
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            const successModal = document.createElement('div');
+            successModal.innerHTML = successHtml;
+            successModal.id = 'successModal';
+            document.body.appendChild(successModal);
+        }
+
+        // Function to update active navigation
+        function updateActiveNav(active) {
+            // Reset all
+            homeBtn.classList.remove('text-blue-600');
+            homeBtn.classList.add('text-gray-600');
+            coursesBtn.classList.remove('text-blue-600');
+            coursesBtn.classList.add('text-gray-600');
+            if (aboutBtn) {
+                aboutBtn.classList.remove('text-blue-600');
+                aboutBtn.classList.add('text-gray-600');
+            }
+            
+            // Set active
+            if (active === 'home') {
+                homeBtn.classList.remove('text-gray-600');
+                homeBtn.classList.add('text-blue-600');
+            } else if (active === 'course') {
+                coursesBtn.classList.remove('text-gray-600');
+                coursesBtn.classList.add('text-blue-600');
+            } else if (active === 'about') {
+                if (aboutBtn) {
+                    aboutBtn.classList.remove('text-gray-600');
+                    aboutBtn.classList.add('text-blue-600');
+                }
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            homeBtn.addEventListener('click', showHomeView);
+            coursesBtn.addEventListener('click', function() {
+                showAllCoursesView();
+            });
+            if (aboutBtn) {
+                aboutBtn.addEventListener('click', function() {
+                    showAboutView();
+                });
+            }
+            const howItWorksBtn = document.getElementById('howItWorksBtn');
+            if (howItWorksBtn) howItWorksBtn.addEventListener('click', showHowItWorks);
+            exploreBtn.addEventListener('click', function() {
+                document.querySelector('.featured-courses').scrollIntoView({ behavior: 'smooth' });
+                updateActiveNav('course');
+            });
+            
+            // Update any static featured card price elements that carry USD values via data attributes
+            // (These were left as static placeholders in the markup and are converted to INR at runtime)
+            function updateStaticPrices() {
+                document.querySelectorAll('[data-usd]').forEach(el => {
+                    const usd = Number(el.getAttribute('data-usd')) || 0;
+                    el.textContent = formatPrice(usd);
+                });
+                document.querySelectorAll('[data-usd-original]').forEach(el => {
+                    const usd = Number(el.getAttribute('data-usd-original')) || 0;
+                    el.textContent = formatPrice(usd);
+                });
+            }
+            updateStaticPrices();
+
+            // Footer quick links wiring (if present)
+            const footerAll = document.getElementById('footerAllCourses');
+            if (footerAll) footerAll.addEventListener('click', (e) => { e.preventDefault(); showAllCoursesView(); });
+            const footerPricing = document.getElementById('footerPricing');
+            if (footerPricing) footerPricing.addEventListener('click', (e) => { e.preventDefault(); showAllCoursesView(); });
+            const footerSuccess = document.getElementById('footerSuccess');
+            if (footerSuccess) footerSuccess.addEventListener('click', (e) => { e.preventDefault(); showSuccessStories(); });
+            const footerBlogLink = document.getElementById('footerBlog');
+            if (footerBlogLink) footerBlogLink.addEventListener('click', (e) => { e.preventDefault(); showBlog(); });
+
+            // Initialize
+            showHomeView();
+        });
+
+        // Show Blog view (if present)
+        function showBlog() {
+            const blogView = document.getElementById('blogView');
+            if (blogView) {
+                hideAllViews();
+                blogView.classList.remove('hidden');
+                updateActiveNav('blog');
+            } else {
+                // fallback: open home
+                showHomeView();
+            }
+        }
+
+        // Scroll to testimonials section
+        function showSuccessStories() {
+            const successView = document.getElementById('successStoriesView');
+            if (successView) {
+                hideAllViews();
+                successView.classList.remove('hidden');
+                updateActiveNav('home');
+            } else {
+                // fallback to old behavior: scroll to testimonials on home
+                const track = document.getElementById('testimonialTrack');
+                if (track) {
+                    hideAllViews();
+                    const home = document.getElementById('homeView');
+                    if (home) home.classList.remove('hidden');
+                    setTimeout(() => {
+                        track.closest('.testimonial-marquee').scrollIntoView({ behavior: 'smooth' });
+                    }, 50);
+                    updateActiveNav('home');
+                } else {
+                    showHomeView();
+                }
+            }
+        }
+
+        // All Courses rendering and filters
+        function showAllCoursesView() {
+            const allView = document.getElementById('allCoursesView');
+            if (!allView) return;
+
+            // Hide other views
+            homeView.classList.add('hidden');
+            courseDetailView.classList.add('hidden');
+            courseDetailView.innerHTML = '';
+            const aboutView = document.getElementById('aboutView');
+            if (aboutView) aboutView.classList.add('hidden');
+            const howView = document.getElementById('howItWorksView');
+            if (howView) howView.classList.add('hidden');
+
+            allView.classList.remove('hidden');
+            updateActiveNav('course');
+            renderCourses();
+        }
+
+        // Success Stories page (full testimonials)
+        // Insert view markup near main views
+        (function addSuccessAndBlogViews() {
+            const main = document.getElementById('mainContent');
+            if (!main) return;
+
+            // Success Stories view
+            if (!document.getElementById('successStoriesView')) {
+                const div = document.createElement('div');
+                div.id = 'successStoriesView';
+                div.className = 'hidden fade-in';
+                div.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Success Stories</h2>
+                        <p class="text-gray-700 mb-6">Hear from learners who've completed our programs.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="successList">
+                            ${[1,2,3,4,5].map(i => `
+                                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                                    <div class="flex items-center mb-4">
+                                        <img src="https://randomuser.me/api/portraits/lego/${i}.jpg" class="w-12 h-12 rounded-full mr-4" />
+                                        <div>
+                                            <div class="font-bold">Student ${i}</div>
+                                            <div class="text-sm text-gray-500">Course: Example Course</div>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-700 mb-3">"This course helped me land a role within weeks. The projects were real-world and mentors were supportive."</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-sm text-gray-600">Rating: 4.${9-i} / 5</div>
+                                        <button class="text-blue-600" onclick="openStory(${i})">Read more</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                main.appendChild(div);
+            }
+
+            // Blog view
+            if (!document.getElementById('blogView')) {
+                const div = document.createElement('div');
+                div.id = 'blogView';
+                div.className = 'hidden fade-in';
+                div.innerHTML = `
+                    <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">Blog</h2>
+                        <p class="text-gray-700 mb-6">Latest articles on courses, tools and industry updates.</p>
+                        <div class="space-y-6" id="blogList">
+                            ${[1,2,3,4,5].map(i => `
+                                <article class="border-b pb-4">
+                                    <h3 class="text-xl font-bold">Blog Post ${i}: Insights on Tool ${i}</h3>
+                                    <p class="text-gray-700 mb-2">A short summary about trends and practical tips related to Tool ${i}...</p>
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-sm text-gray-500">By Admin • Dec ${10+i}, 2025</div>
+                                        <button class="text-blue-600" onclick="openBlogPostInline(${i})">Read more</button>
+                                    </div>
+                                </article>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                main.appendChild(div);
+            }
+        })();
+
+        // Open a success story modal
+        function openStory(i) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl max-w-2xl w-full p-6">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-2xl font-bold">Student ${i} - Success Story</h3>
+                        <button aria-label="Close" class="text-gray-600" onclick="this.closest('div.fixed').remove()">&times;</button>
+                    </div>
+                    <div class="mt-4 text-gray-700">Full success story content for student ${i}. They completed the course and transitioned into a new role using skills learned.</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Open blog post inline modal
+        function openBlogPostInline(i) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl max-w-3xl w-full p-6">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-2xl font-bold">Blog Post ${i}: Insights on Tool ${i}</h3>
+                        <button aria-label="Close" class="text-gray-600" onclick="this.closest('div.fixed').remove()">&times;</button>
+                    </div>
+                    <div class="mt-4 text-gray-700">Full blog post content about Tool ${i}. This contains practical tips, code snippets and recommended workflows to apply in projects.</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function courseCardHTML(course) {
+            return `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-gray-800">${course.title}</h4>
+                            <p class="text-sm text-gray-500">${course.subtitle}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold text-${course.color}-600">${formatPrice(course.price)}</div>
+                            <div class="text-gray-500 line-through text-sm">${formatPrice(course.originalPrice)}</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">${course.description}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-600">Level: ${course.level}</div>
+                        <div class="text-sm text-gray-600">Provider: ${course.provider}</div>
+                        <div class="text-sm text-gray-600">Delivery: ${course.delivery}</div>
+                        <div class="text-sm text-gray-600">Rating: ${course.rating}</div>
+                    </div>
+                    <div class="mt-4">
+                        <button onclick="viewCourse('${course.id}')" class="bg-blue-600 text-white px-4 py-2 rounded-lg">View Details</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCourses() {
+            const list = document.getElementById('coursesList');
+            if (!list) return;
+
+            const level = document.getElementById('filterLevel').value;
+            const provider = document.getElementById('filterProvider').value;
+            const delivery = document.getElementById('filterDelivery').value;
+            const rating = parseFloat(document.getElementById('filterRating').value);
+
+            list.innerHTML = '';
+            Object.values(courses).forEach(course => {
+                // normalize level comparisons (some levels like 'Beginner-Intermediate')
+                const matchesLevel = level === 'all' || course.level === level || (level === 'Beginner' && course.level.toLowerCase().includes('beginner'));
+                const matchesProvider = provider === 'all' || course.provider === provider;
+                const matchesDelivery = delivery === 'all' || course.delivery === delivery;
+                const matchesRating = isNaN(rating) ? true : (course.rating >= rating);
+
+                if (matchesLevel && matchesProvider && matchesDelivery && matchesRating) {
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = courseCardHTML(course);
+                    list.appendChild(wrapper.firstElementChild);
+                }
+            });
+        }
+
+        // Wire filters
+        document.addEventListener('change', function(e) {
+            if (!document.getElementById('allCoursesView')) return;
+            if (['filterLevel','filterProvider','filterDelivery','filterRating'].includes(e.target.id)) {
+                renderCourses();
+            }
+        });
+
+        // Carousel logic for featured courses
+        (function() {
+            const track = document.getElementById('carouselTrack');
+            const prevBtn = document.getElementById('carouselPrev');
+            // create next button
+            const nextBtn = document.createElement('button');
+            nextBtn.id = 'carouselNext';
+            nextBtn.setAttribute('aria-label','Next courses');
+            nextBtn.className = 'absolute -right-3 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-md hover:bg-gray-100 text-gray-700 carousel-arrow';
+            nextBtn.innerHTML = `
+                <!-- Inline SVG chevron right -->
+                <svg class="w-6 h-6" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            `;
+            // append next button to the carousel container (parent of track)
+            const carouselContainer = track && track.parentElement ? track.parentElement.parentElement : null;
+            if (carouselContainer) carouselContainer.appendChild(nextBtn);
+
+            // Dots (page indicators)
+            const dotsContainer = document.createElement('div');
+            dotsContainer.id = 'carouselDots';
+            dotsContainer.className = 'flex items-center justify-center gap-2 mt-6';
+            dotsContainer.setAttribute('role', 'tablist');
+            if (carouselContainer) carouselContainer.appendChild(dotsContainer);
+
+            let items = [];
+            let currentIndex = 0;
+
+            function updateItems() {
+                items = Array.from(document.querySelectorAll('.carousel-item'));
+            }
+
+            function visibleCount() {
+                // 1 on small screens, 2 on md and up
+                return window.innerWidth >= 768 ? 2 : 1;
+            }
+
+            function updateButtons() {
+                const maxIndex = Math.max(0, items.length - visibleCount());
+                if (prevBtn) prevBtn.disabled = currentIndex === 0;
+                if (nextBtn) nextBtn.disabled = currentIndex >= maxIndex;
+                prevBtn.style.opacity = prevBtn.disabled ? '0.4' : '1';
+                nextBtn.style.opacity = nextBtn.disabled ? '0.4' : '1';
+            }
+
+            function updateIndicators() {
+                if (!dotsContainer) return;
+                // clear existing dots
+                dotsContainer.innerHTML = '';
+                const vc = visibleCount();
+                const pageCount = Math.max(1, Math.ceil(items.length / vc));
+                for (let p = 0; p < pageCount; p++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'w-3 h-3 rounded-full transition-colors';
+                    btn.setAttribute('aria-label', `Go to page ${p+1}`);
+                    btn.setAttribute('role', 'tab');
+                    btn.dataset.page = p;
+                    // style selected
+                    const pageIndex = p * vc;
+                    const isSelected = currentIndex === pageIndex || (currentIndex >= pageIndex && currentIndex < pageIndex + vc);
+                    if (isSelected) {
+                        btn.classList.add('bg-gray-700');
+                        btn.setAttribute('aria-selected', 'true');
+                    } else {
+                        btn.classList.add('bg-gray-300');
+                        btn.setAttribute('aria-selected', 'false');
+                    }
+                    btn.addEventListener('click', () => {
+                        moveToIndex(pageIndex);
+                    });
+                    dotsContainer.appendChild(btn);
+                }
+            }
+
+            function updateAccessibility() {
+                const vc = visibleCount();
+                items.forEach((el, idx) => {
+                    const isVisible = idx >= currentIndex && idx < currentIndex + vc;
+                    if (isVisible) {
+                        el.setAttribute('aria-hidden', 'false');
+                        el.removeAttribute('inert');
+                        // make focusable
+                        const focusables = el.querySelectorAll('button, a, input, [tabindex]');
+                        focusables.forEach(f => {
+                            if (f.getAttribute('data-carousel-saved-tabindex') !== null) {
+                                f.setAttribute('tabindex', f.getAttribute('data-carousel-saved-tabindex'));
+                                f.removeAttribute('data-carousel-saved-tabindex');
+                            } else {
+                                f.setAttribute('tabindex', '0');
+                            }
+                        });
+                    } else {
+                        el.setAttribute('aria-hidden', 'true');
+                        el.setAttribute('inert', '');
+                        // remove from tab order but preserve any existing tabindex
+                        const focusables = el.querySelectorAll('button, a, input, [tabindex]');
+                        focusables.forEach(f => {
+                            const prev = f.getAttribute('tabindex');
+                            if (prev !== null) f.setAttribute('data-carousel-saved-tabindex', prev);
+                            f.setAttribute('tabindex', '-1');
+                        });
+                    }
+                });
+            }
+
+            function moveToIndex(index) {
+                const vc = visibleCount();
+                const maxIndex = Math.max(0, items.length - vc);
+                currentIndex = Math.min(Math.max(0, index), maxIndex);
+                const itemWidth = items[0] ? items[0].getBoundingClientRect().width : 0;
+                // Try to read the gap from computed styles; fallback to 32px (gap-8)
+                let gap = 32;
+                try {
+                    const cs = track ? getComputedStyle(track) : null;
+                    const gapVal = cs ? (cs.getPropertyValue('gap') || cs.getPropertyValue('column-gap')) : null;
+                    if (gapVal) {
+                        // gapVal may be like '32px'
+                        const n = parseFloat(gapVal);
+                        if (!isNaN(n)) gap = n;
+                    }
+                } catch (err) {
+                    // ignore and use fallback
+                }
+
+                // container is the overflow-hidden wrapper around the track
+                // the carousel viewport is the immediate parent (overflow-hidden) around the track
+                const viewport = track && track.parentElement ? track.parentElement : null;
+                const container = viewport && viewport.parentElement ? viewport.parentElement : viewport;
+                const containerWidth = viewport ? viewport.getBoundingClientRect().width : (container ? container.getBoundingClientRect().width : window.innerWidth);
+
+                const vcLocal = visibleCount();
+                const totalVisibleWidth = (vcLocal * itemWidth) + (Math.max(0, vcLocal - 1) * gap);
+                // center the visible group inside the container
+                const leftOffset = Math.max(0, (containerWidth - totalVisibleWidth) / 2);
+
+                const translateX = -(currentIndex * (itemWidth + gap)) + leftOffset;
+                if (track) track.style.transform = `translateX(${translateX}px)`;
+                updateButtons();
+                updateAccessibility();
+                updateIndicators();
+            }
+
+            function next() { moveToIndex(currentIndex + 1); }
+            function prev() { moveToIndex(currentIndex - 1); }
+
+            function init() {
+                updateItems();
+                // set track transition
+                if (track) {
+                    track.style.transition = 'transform 0.4s ease';
+                    track.style.willChange = 'transform';
+                }
+                // ensure track children don't wrap
+                if (track) track.style.flexWrap = 'nowrap';
+                // attach handlers
+                if (nextBtn) nextBtn.addEventListener('click', next);
+                if (prevBtn) prevBtn.addEventListener('click', prev);
+                // keyboard support
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight') next();
+                    if (e.key === 'ArrowLeft') prev();
+                });
+
+                // on resize, recompute
+                window.addEventListener('resize', () => {
+                    // small debounce
+                    clearTimeout(window._carouselResizeTimeout);
+                    window._carouselResizeTimeout = setTimeout(() => moveToIndex(currentIndex), 120);
+                });
+
+                // initial position
+                moveToIndex(0);
+                updateIndicators();
+            }
+
+            // init when DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>
