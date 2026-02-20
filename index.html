@@ -1397,19 +1397,8 @@
                                 
                                 ${course.syllabus.filter(week => week.week >= 2).length > 0 ? `
                                     <div class="relative">
-                                        <div class="absolute inset-0 bg-white bg-opacity-95 backdrop-blur-[1px] flex items-center justify-center z-10 rounded-lg">
-                                            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
-                                                <h4 class="text-xl font-bold text-gray-800 mb-4">Get Full Syllabus</h4>
-                                                <p class="text-gray-600 mb-6">Enter your details to access the complete course syllabus and more information about all modules.</p>
-                                                <form class="space-y-4" onsubmit="submitSyllabusRequest('${course.id}'); return false;">
-                                                    <input type="text" placeholder="Full Name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
-                                                    <input type="email" placeholder="Email Address" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
-                                                    <input type="tel" placeholder="Phone Number" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
-                                                    <button type="submit" class="w-full bg-${course.color}-600 text-white py-3 rounded-lg font-semibold hover:bg-${course.color}-700 transition">
-                                                        Get Complete Syllabus
-                                                    </button>
-                                                </form>
-                                            </div>
+                                        <div class="absolute inset-0 z-10 rounded-lg overflow-hidden">
+                                            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScoQKhM4iwVNQvKdkvt6-w428S6-1Xbuk6oOG38CyIpUhbMpA/viewform?usp=header" width="100%" height="700" frameborder="0" marginheight="0" marginwidth="0" class="w-full h-full"></iframe>
                                         </div>
                                         <div class="opacity-60">
                                             ${course.syllabus.filter(week => week.week >= 2).map(week => `
@@ -1507,51 +1496,50 @@
         function registerForCourse(courseId) {
             const course = courses[courseId];
             if (!course) return;
-            
-            // Create registration modal
+
+            // Create registration modal with embedded Google Form
             const modalHtml = `
                 <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div class="bg-white rounded-2xl max-w-md w-full p-8">
-                        <div class="text-center mb-6">
-                            <div class="w-16 h-16 rounded-full bg-${course.color}-100 flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-check text-${course.color}-600 text-2xl"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Register for ${course.title}</h3>
-                            <p class="text-gray-600">Complete your registration to start learning</p>
-                        </div>
-                        
-                        <form id="registrationForm" class="space-y-4">
+                    <div class="bg-white rounded-2xl max-w-3xl w-full p-6">
+                        <div class="flex justify-between items-start mb-4">
                             <div>
-                                <label class="block text-gray-700 mb-2">Full Name</label>
-                                <input type="text" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-1">Register for ${course.title}</h3>
+                                <p class="text-gray-600 text-sm">Please complete the short registration form below to enroll.</p>
                             </div>
-                            <div>
-                                <label class="block text-gray-700 mb-2">Email Address</label>
-                                <input type="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-${course.color}-500 focus:border-transparent">
-                            </div>
-                            <div class="flex items-center">
-                                <input type="checkbox" id="terms" required class="mr-3">
-                                <label for="terms" class="text-gray-700">I agree to the terms and conditions</label>
-                            </div>
-                        </form>
-                        
-                        <div class="mt-8 flex space-x-4">
-                            <button onclick="closeModal()" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50">
-                                Cancel
-                            </button>
-                            <button onclick="submitRegistration('${courseId}')" class="flex-1 bg-${course.color}-600 text-white py-3 rounded-lg font-semibold hover:bg-${course.color}-700">
-                                Complete Registration - ${formatPrice(course.price)}
-                            </button>
+                            <button onclick="closeModal()" aria-label="Close registration" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md bg-white text-2xl focus:outline-none focus:ring-2 focus:ring-blue-500">&times;</button>
                         </div>
+
+                        <div class="w-full h-[640px] overflow-hidden rounded-lg border border-gray-200">
+                            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScoQKhM4iwVNQvKdkvt6-w428S6-1Xbuk6oOG38CyIpUhbMpA/viewform?usp=header" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0" class="w-full h-full"></iframe>
+                        </div>
+
+                        
                     </div>
                 </div>
             `;
-            
+
             // Create and append modal
             const modal = document.createElement('div');
             modal.innerHTML = modalHtml;
             modal.id = 'registrationModal';
             document.body.appendChild(modal);
+
+            // Detect Google Form submission by listening for iframe load events.
+            // Many Google Forms will load a confirmation page after submit which triggers a second load.
+            // We close the modal when the iframe has loaded more than once.
+            const iframe = modal.querySelector('iframe');
+            if (iframe) {
+                let loadCount = 0;
+                iframe.addEventListener('load', () => {
+                    loadCount += 1;
+                    if (loadCount > 1) {
+                        // small delay so the user sees the confirmation briefly
+                        setTimeout(() => {
+                            closeModal();
+                        }, 600);
+                    }
+                });
+            }
         }
 
         // Function to close modal
